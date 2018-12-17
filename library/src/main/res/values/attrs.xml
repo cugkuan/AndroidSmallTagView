@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SmallTagView">
+
+        <attr name="textPaddingLeft" format="dimension|reference"></attr>
+        <attr name="textPaddingRight" format="dimension|reference"></attr>
+        <attr name="textPaddingTop" format="dimension|reference"></attr>
+        <attr name="textPaddingBottom" format="dimension"></attr>
+        
+        
+        <attr name="tagBackground" format="color|reference"></attr>
+        <attr name="tagTextColor" format="color|reference"></attr>
+        <attr name="tagTextSize" format="dimension|reference"></attr>
+        <attr name="tagRadius" format="dimension|integer"></attr>
+        
+        <attr name="tagDivider" format="dimension|reference"></attr>
+
+        <attr name="maxLines" format="integer|reference"></attr>
+ 
+
+    </declare-styleable>
+</resources>
