@@ -24,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
         List<String>  tags = new ArrayList<>();
 
         tags.add("数学");
+        tags.add("这是一个很长很长很长很长很长很长很长的Tag");
         tags.add("语文");
         tags.add("化学");
-
         mSmallTagView.setTags(tags);
 
     }

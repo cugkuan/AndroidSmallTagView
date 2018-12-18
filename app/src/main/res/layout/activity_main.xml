@@ -14,6 +14,7 @@
         app:textPaddingLeft="20dp"
         app:textPaddingRight="4dp"
         app:tagRadius="5dp"
+        app:tagDivider="2dp"
         android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>
