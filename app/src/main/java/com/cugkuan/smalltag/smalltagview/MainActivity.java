@@ -27,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
         tags.add("这是一个很长很长很长很长很长很长很长的Tag");
         tags.add("语文");
         tags.add("化学");
+        tags.add("生物");
+        tags.add("化学");
+        tags.add("历史");
         mSmallTagView.setTags(tags);
 
     }

@@ -7,14 +7,20 @@
     tools:context=".MainActivity">
 
     <com.cugkuan.smalltag.SmallTagView
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:id="@+id/tag"
-        app:tagTextSize="18sp"
-        app:tagBackground="#2eb1ff"
-        app:textPaddingLeft="20dp"
+        app:tagTextSize="11sp"
+        app:tagBackground="#f2f2f2"
+        app:textPaddingLeft="4dp"
         app:textPaddingRight="4dp"
-        app:tagRadius="5dp"
-        app:tagDivider="2dp"
+        app:tagRadius="3dp"
+        app:tagTextColor="#2eb1ff"
+        app:maxLines="3"
+        app:tagHorizontalDivider="2dp"
+        app:tagVerticalDivider="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:background="#ccc"
         android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>
