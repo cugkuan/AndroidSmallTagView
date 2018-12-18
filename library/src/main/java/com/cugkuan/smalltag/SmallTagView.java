@@ -141,8 +141,14 @@ public final class SmallTagView extends View {
      * @param tags
      */
     public void setTags(List<String> tags) {
+
+        if (mTagDrawables != null){
+            mTagDrawables.clear();
+        }
         if (tags != null && !tags.isEmpty()) {
-            mTagDrawables = new ArrayList<>(tags.size());
+            if (mTagDrawables == null) {
+                mTagDrawables = new ArrayList<>(tags.size());
+            }
             int size = Math.min(mMaxTagNum, tags.size());
             for (int i = 0; i < size; i++) {
                 String tag = tags.get(i);
@@ -156,6 +162,7 @@ public final class SmallTagView extends View {
                 mTagDrawables.add(tagDrawable);
             }
         }
+        requestLayout();
         invalidate();
     }
 
@@ -222,7 +229,6 @@ public final class SmallTagView extends View {
         } else {
             height = resultHeight;
         }
-
         setMeasuredDimension(width, height);
     }
 
@@ -244,6 +250,7 @@ public final class SmallTagView extends View {
         canvas.save();
         int tagHeight = getTextHeight();
         int currentLine = -1;
+
         for (TagDrawable drawable : mTagDrawables) {
             int line = drawable.line;
             //最大行数的判断
@@ -263,6 +270,7 @@ public final class SmallTagView extends View {
             int dx = drawable.getWidth() + mHorizontalDivider;
             canvas.translate(dx, 0);
         }
+        canvas.restore();
     }
 
     private int getTextHeight() {

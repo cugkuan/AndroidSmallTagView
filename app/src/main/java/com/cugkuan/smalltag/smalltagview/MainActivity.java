@@ -2,6 +2,7 @@ package com.cugkuan.smalltag.smalltagview;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cugkuan.smalltag.SmallTagView;
@@ -34,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
 
         SmallTagView tagView2 = findViewById(R.id.tag2);
         tagView2.setTags(tags);
+
+
+        ListView listView = findViewById(R.id.listView);
+
+        ItemAdapter adapter = new ItemAdapter();
+
+        listView.setAdapter(adapter);
 
     }
 }
