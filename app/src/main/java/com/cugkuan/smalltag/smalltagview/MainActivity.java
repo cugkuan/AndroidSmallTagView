@@ -32,5 +32,8 @@ public class MainActivity extends AppCompatActivity {
         tags.add("历史");
         mSmallTagView.setTags(tags);
 
+        SmallTagView tagView2 = findViewById(R.id.tag2);
+        tagView2.setTags(tags);
+
     }
 }

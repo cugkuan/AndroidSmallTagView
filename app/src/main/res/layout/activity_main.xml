@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <com.cugkuan.smalltag.SmallTagView
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:id="@+id/tag"
         app:tagTextSize="11sp"
         app:tagBackground="#f2f2f2"
@@ -20,9 +20,24 @@
         app:tagHorizontalDivider="2dp"
         app:tagVerticalDivider="2dp"
         android:paddingLeft="5dp"
-        android:paddingRight="5dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
+        android:background="#ccc"
+        android:layout_height="wrap_content" />
+
+    <com.cugkuan.smalltag.SmallTagView
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:id="@+id/tag2"
+        app:tagTextSize="11sp"
+        app:tagBackground="#f2f2f2"
+        app:textPaddingLeft="4dp"
+        app:textPaddingRight="4dp"
+        app:tagRadius="3dp"
+        app:tagTextColor="#2eb1ff"
+        app:maxLines="3"
+        app:tagHorizontalDivider="2dp"
+        app:tagVerticalDivider="2dp"
         android:background="#ccc"
         android:layout_height="wrap_content" />
 

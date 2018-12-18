@@ -8,6 +8,7 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
@@ -162,28 +163,46 @@ public final class SmallTagView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 
+        int width;
+        int height;
 
         if (mTagDrawables == null || mTagDrawables.isEmpty()) {
+            if (widthMode == MeasureSpec.AT_MOST) {
+                width = 0;
+            } else {
+                width = widthSize;
+            }
+            if (heightMode == MeasureSpec.AT_MOST) {
+                height = 0;
+            } else {
+                height = heightSize;
+            }
             setMeasuredDimension(width, height);
             return;
         }
         /**
          * 列
          */
+        int resultWidth = 0;
         int line = 0;
         int row = 0;
         int useWidth = getPaddingLeft() + getPaddingRight();
 
         for (TagDrawable tagDrawable : mTagDrawables) {
-            useWidth = useWidth + tagDrawable.width + mHorizontalDivider ;
+            useWidth = useWidth + tagDrawable.width + mHorizontalDivider;
             //需要换行了。
-            if (useWidth > width && row > 0) {
+            if (useWidth > widthSize && row > 0) {
                 row = 0;
                 line++;
                 useWidth = tagDrawable.width + mHorizontalDivider + getPaddingLeft() + getPaddingRight();
+                resultWidth = Math.max(resultWidth, useWidth);
+            } else {
+                resultWidth = Math.max(resultWidth, useWidth);
             }
             tagDrawable.line = line;
             tagDrawable.row = row;
@@ -191,10 +210,20 @@ public final class SmallTagView extends View {
         }
         //计算View的高度
         int tagHeight = getTextHeight();
-        int resultLine = Math.min(line, mMaxLines);
+        int resultLine = Math.min(line + 1, mMaxLines);
         int resultHeight = tagHeight * resultLine + mVerticalDivider * (resultLine - 1) + getPaddingTop() + getPaddingBottom();
+        if (widthMode == MeasureSpec.EXACTLY) {
+            width = widthSize;
+        } else {
+            width = Math.min(widthSize, resultWidth) + mHorizontalDivider;
+        }
+        if (heightMode == MeasureSpec.EXACTLY) {
+            height = heightSize;
+        } else {
+            height = resultHeight;
+        }
 
-        setMeasuredDimension(width, Math.max(resultHeight, height));
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -204,16 +233,13 @@ public final class SmallTagView extends View {
         if (mTagDrawables == null || mTagDrawables.isEmpty()) {
             return;
         }
-        int  cWidth = getWidth() - getPaddingLeft() - getPaddingRight();
-        if (cWidth <  0){
-            cWidth = 0;
-        }
-        int cHeight = getWidth() - getPaddingTop() - getPaddingBottom();
-        if (cHeight < 0){
-            cHeight = 0;
-        }
-        canvas.clipRect(getPaddingLeft(),getPaddingTop(),cWidth,cHeight);
-        canvas.translate(getPaddingLeft(),getPaddingTop());
+        int cLeft = getPaddingLeft();
+        int cRight = getMeasuredWidth() - getPaddingLeft();
+        int cTop = getPaddingTop();
+        int cBottom = getMeasuredHeight() - getPaddingTop();
+
+        canvas.clipRect(cLeft, cTop, cRight, cBottom, Region.Op.REPLACE);
+        canvas.translate(cLeft, cTop);
 
         canvas.save();
         int tagHeight = getTextHeight();
@@ -241,8 +267,8 @@ public final class SmallTagView extends View {
 
     private int getTextHeight() {
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-        int fontHeight = (int) (fontMetrics.bottom - fontMetrics.top);
-        return fontHeight + mTextPaddingTop + mTextPaddingBottom;
+        int fontHeight = Math.round(fontMetrics.bottom - fontMetrics.top);
+        return (fontHeight + mTextPaddingTop + mTextPaddingBottom);
 
     }
 
@@ -300,8 +326,8 @@ public final class SmallTagView extends View {
 
         public TagDrawable commit() {
             Paint.FontMetrics fontMetrics = textContentPain.getFontMetrics();
-            int fontHeight = (int) (fontMetrics.bottom - fontMetrics.top);
-            width = (int) textContentPain.measureText(text) + leftPadding + rightPadding;
+            int fontHeight = Math.round(fontMetrics.bottom - fontMetrics.top);
+            width = Math.round(textContentPain.measureText(text)) + leftPadding + rightPadding;
             height = fontHeight + topPadding + bottomPadding;
             setBounds(0, 0, width, height);
             fBounds = new RectF(getBounds());
