@@ -31,8 +31,6 @@ public final class SmallTagView extends View {
     private static final int DEFAULT_COLOR = Color.parseColor("#F2F2F2");
 
     private int mTagBackground = DEFAULT_COLOR;
-
-
     /**
      * 垂直方向Tag的间隔
      */
@@ -45,7 +43,6 @@ public final class SmallTagView extends View {
      * tag的圆角
      */
     private int mTagRadius;
-
     /**
      * Tag的文字Size.
      */
@@ -72,7 +69,6 @@ public final class SmallTagView extends View {
     private List<TagDrawable> mTagDrawables;
 
     private Paint mTextPaint;
-
     /**
      * tag 的背景颜色
      */
@@ -168,6 +164,8 @@ public final class SmallTagView extends View {
 
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+
+
         if (mTagDrawables == null || mTagDrawables.isEmpty()) {
             setMeasuredDimension(width, height);
             return;
@@ -177,14 +175,15 @@ public final class SmallTagView extends View {
          */
         int line = 0;
         int row = 0;
-        int useWidth = 0;
+        int useWidth = getPaddingLeft() + getPaddingRight();
+
         for (TagDrawable tagDrawable : mTagDrawables) {
-            useWidth = useWidth + tagDrawable.width + mHorizontalDivider;
+            useWidth = useWidth + tagDrawable.width + mHorizontalDivider ;
             //需要换行了。
             if (useWidth > width && row > 0) {
                 row = 0;
                 line++;
-                useWidth = tagDrawable.width + mHorizontalDivider;
+                useWidth = tagDrawable.width + mHorizontalDivider + getPaddingLeft() + getPaddingRight();
             }
             tagDrawable.line = line;
             tagDrawable.row = row;
@@ -193,18 +192,29 @@ public final class SmallTagView extends View {
         //计算View的高度
         int tagHeight = getTextHeight();
         int resultLine = Math.min(line, mMaxLines);
-        int resultHeight = tagHeight * resultLine + mVerticalDivider * (resultLine - 1);
-        setMeasuredDimension(width, Math.max(resultHeight, width));
+        int resultHeight = tagHeight * resultLine + mVerticalDivider * (resultLine - 1) + getPaddingTop() + getPaddingBottom();
+
+        setMeasuredDimension(width, Math.max(resultHeight, height));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
         if (mTagDrawables == null || mTagDrawables.isEmpty()) {
             return;
         }
+        int  cWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+        if (cWidth <  0){
+            cWidth = 0;
+        }
+        int cHeight = getWidth() - getPaddingTop() - getPaddingBottom();
+        if (cHeight < 0){
+            cHeight = 0;
+        }
+        canvas.clipRect(getPaddingLeft(),getPaddingTop(),cWidth,cHeight);
+        canvas.translate(getPaddingLeft(),getPaddingTop());
+
         canvas.save();
         int tagHeight = getTextHeight();
         int currentLine = -1;
