@@ -12,9 +12,10 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +75,12 @@ public final class SmallTagView extends View {
      * tag 的背景颜色
      */
     private Paint mTagBackgroundPaint;
+
+
+    private List<String> mTags;
+
+
+    private Layout mLayout;
 
 
     public SmallTagView(Context context) {
@@ -136,18 +143,23 @@ public final class SmallTagView extends View {
     }
 
     /**
-     * 设置Tags;
+     * 设置Tags;这里注意，什么时候需要只需要重绘
+     * 什么时候，需要重新的布局。
+     * 这里这是采用简单的方式，没有TextView 那么复杂的模式。
      *
      * @param tags
      */
     public void setTags(List<String> tags) {
 
-        if (mTagDrawables != null){
-            mTagDrawables.clear();
+        if (mLayout != null){
+            mLayout.setNeedCalculate(true);
         }
-        if (tags != null && !tags.isEmpty()) {
+        if (!isTagsSame(tags)) {
+            mTags = tags;
             if (mTagDrawables == null) {
-                mTagDrawables = new ArrayList<>(tags.size());
+                mTagDrawables = new ArrayList<>(mTags.size());
+            } else {
+                mTagDrawables.clear();
             }
             int size = Math.min(mMaxTagNum, tags.size());
             for (int i = 0; i < size; i++) {
@@ -161,75 +173,57 @@ public final class SmallTagView extends View {
                         .commit();
                 mTagDrawables.add(tagDrawable);
             }
+            if (mLayout != null) {
+                int oldWidth = mLayout.getWidth();
+                int oldHeight = mLayout.getHeight();
+                mLayout.calculate();
+                mLayout.setNeedCalculate(false);
+                if (oldWidth == mLayout.getWidth() && oldHeight == mLayout.getHeight()) {
+                    invalidate();
+                    return;
+                }
+            }
+            requestLayout();
+            invalidate();
+        } else {
+            invalidate();
         }
-        requestLayout();
-        invalidate();
+    }
+
+    private boolean isTagsSame(List<String> tags) {
+
+        if (tags == null || mTags == null || tags.size() != mTags.size()) {
+            return false;
+        } else {
+            for (int i = 0; i < tags.size(); i++) {
+                String tag = tags.get(i);
+                String old = mTags.get(i);
+                if (!TextUtils.equals(tag, old)) {
+                    return false;
+                }
+
+            }
+            return true;
+        }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 
-        int width;
-        int height;
-
-        if (mTagDrawables == null || mTagDrawables.isEmpty()) {
-            if (widthMode == MeasureSpec.AT_MOST) {
-                width = 0;
-            } else {
-                width = widthSize;
-            }
-            if (heightMode == MeasureSpec.AT_MOST) {
-                height = 0;
-            } else {
-                height = heightSize;
-            }
-            setMeasuredDimension(width, height);
-            return;
-        }
-        /**
-         * 列
-         */
-        int resultWidth = 0;
-        int line = 0;
-        int row = 0;
-        int useWidth = getPaddingLeft() + getPaddingRight();
-
-        for (TagDrawable tagDrawable : mTagDrawables) {
-            useWidth = useWidth + tagDrawable.width + mHorizontalDivider;
-            //需要换行了。
-            if (useWidth > widthSize && row > 0) {
-                row = 0;
-                line++;
-                useWidth = tagDrawable.width + mHorizontalDivider + getPaddingLeft() + getPaddingRight();
-                resultWidth = Math.max(resultWidth, useWidth);
-            } else {
-                resultWidth = Math.max(resultWidth, useWidth);
-            }
-            tagDrawable.line = line;
-            tagDrawable.row = row;
-            row++;
-        }
-        //计算View的高度
-        int tagHeight = getTextHeight();
-        int resultLine = Math.min(line + 1, mMaxLines);
-        int resultHeight = tagHeight * resultLine + mVerticalDivider * (resultLine - 1) + getPaddingTop() + getPaddingBottom();
-        if (widthMode == MeasureSpec.EXACTLY) {
-            width = widthSize;
+        if (mLayout == null) {
+            mLayout = new Layout(widthMeasureSpec, heightMeasureSpec);
         } else {
-            width = Math.min(widthSize, resultWidth) + mHorizontalDivider;
+            mLayout.setHeightMeasureSpec(heightMeasureSpec);
+            mLayout.setWidthMeasureSpec(widthMeasureSpec);
+
         }
-        if (heightMode == MeasureSpec.EXACTLY) {
-            height = heightSize;
-        } else {
-            height = resultHeight;
+        if (mLayout.isNeedCalculate()) {
+            mLayout.calculate();
         }
-        setMeasuredDimension(width, height);
+        setMeasuredDimension(mLayout.getWidth(), mLayout.getHeight());
+
     }
 
     @Override
@@ -285,6 +279,125 @@ public final class SmallTagView extends View {
         return (int) (dpValue * scale + 0.5f);
     }
 
+    /**
+     * 一个内部类，封装了Tags的分布，高度计算等操作
+     */
+    private class Layout {
+
+        private int widthMeasureSpec;
+        private int heightMeasureSpec;
+        /**
+         * View 宽度
+         */
+        private int mWidth;
+        /**
+         * View 的高度
+         */
+        private int mHeight;
+
+        /**
+         * 是否需要进行计算。
+         * 避免多次计算的一个处理方式。
+         */
+        private boolean needCalculate = true;
+
+
+        public Layout(int widthSpec, int heightSpec) {
+            this.widthMeasureSpec = widthSpec;
+            this.heightMeasureSpec = heightSpec;
+        }
+
+        public void setWidthMeasureSpec(int widthMeasureSpec) {
+            this.widthMeasureSpec = widthMeasureSpec;
+        }
+
+        public void setHeightMeasureSpec(int heightMeasureSpec) {
+            this.heightMeasureSpec = heightMeasureSpec;
+        }
+
+        public boolean isNeedCalculate() {
+            return needCalculate;
+        }
+
+        public void setNeedCalculate(boolean needCalculate) {
+            this.needCalculate = needCalculate;
+        }
+
+        /**
+         * 开始计算布局了。
+         */
+        public void calculate() {
+
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            int width;
+            int height;
+            if (mTagDrawables == null || mTagDrawables.isEmpty()) {
+                if (widthMode == MeasureSpec.AT_MOST) {
+                    width = 0;
+                } else {
+                    width = widthSize;
+                }
+                if (heightMode == MeasureSpec.AT_MOST) {
+                    height = 0;
+                } else {
+                    height = heightSize;
+                }
+                this.mWidth = width;
+                this.mHeight = height;
+                return;
+            }
+            /**
+             * 列
+             */
+            int resultWidth = 0;
+            int line = 0;
+            int row = 0;
+            int useWidth = getPaddingLeft() + getPaddingRight();
+
+            for (TagDrawable tagDrawable : mTagDrawables) {
+                useWidth = useWidth + tagDrawable.width + mHorizontalDivider;
+                //需要换行了。
+                if (useWidth > widthSize && row > 0) {
+                    row = 0;
+                    line++;
+                    useWidth = tagDrawable.width + mHorizontalDivider + getPaddingLeft() + getPaddingRight();
+                    resultWidth = Math.max(resultWidth, useWidth);
+                } else {
+                    resultWidth = Math.max(resultWidth, useWidth);
+                }
+                tagDrawable.line = line;
+                tagDrawable.row = row;
+                row++;
+            }
+            //计算View的高度
+            int tagHeight = getTextHeight();
+            int resultLine = Math.min(line + 1, mMaxLines);
+            int resultHeight = tagHeight * resultLine + mVerticalDivider * (resultLine - 1) + getPaddingTop() + getPaddingBottom();
+            if (widthMode == MeasureSpec.EXACTLY) {
+                mWidth = widthSize;
+            } else {
+                mWidth = Math.min(widthSize, resultWidth) + mHorizontalDivider;
+            }
+            if (heightMode == MeasureSpec.EXACTLY) {
+                mHeight = heightSize;
+            } else {
+                mHeight = resultHeight;
+            }
+        }
+
+        public int getWidth() {
+            return mWidth;
+        }
+
+
+        public int getHeight() {
+            return mHeight;
+        }
+
+    }
 
     private static class TagDrawable extends Drawable {
 
