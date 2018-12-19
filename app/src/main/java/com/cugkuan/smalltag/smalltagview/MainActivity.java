@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSmallTagView = findViewById(R.id.tag);
+        SmallTagView mSmallTagView = findViewById(R.id.tag);
 
         List<String>  tags = new ArrayList<>();
 
