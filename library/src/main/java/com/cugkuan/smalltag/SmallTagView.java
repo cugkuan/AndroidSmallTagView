@@ -23,6 +23,8 @@ import java.util.List;
 
 /**
  * 轻量级的Tags,主要适用于ListView recycleView中。
+ * <p>
+ * 在设置Tags后，什么时候需要重新布局，什么时候需要只需要重新绘制，进行了简单的优化。
  */
 public final class SmallTagView extends View {
 
@@ -143,15 +145,13 @@ public final class SmallTagView extends View {
     }
 
     /**
-     * 设置Tags;这里注意，什么时候需要只需要重绘
-     * 什么时候，需要重新的布局。
-     * 这里这是采用简单的方式，没有TextView 那么复杂的模式。
+     * 设置Tags
      *
      * @param tags
      */
     public void setTags(List<String> tags) {
 
-        if (mLayout != null){
+        if (mLayout != null) {
             mLayout.setNeedCalculate(true);
         }
         if (!isTagsSame(tags)) {
@@ -201,7 +201,6 @@ public final class SmallTagView extends View {
                 if (!TextUtils.equals(tag, old)) {
                     return false;
                 }
-
             }
             return true;
         }
@@ -210,8 +209,6 @@ public final class SmallTagView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-
         if (mLayout == null) {
             mLayout = new Layout(widthMeasureSpec, heightMeasureSpec);
         } else {
@@ -297,7 +294,7 @@ public final class SmallTagView extends View {
 
         /**
          * 是否需要进行计算。
-         * 避免多次计算的一个处理方式。
+         * 为避免多次计算
          */
         private boolean needCalculate = true;
 
@@ -359,7 +356,7 @@ public final class SmallTagView extends View {
 
             for (TagDrawable tagDrawable : mTagDrawables) {
                 useWidth = useWidth + tagDrawable.width + mHorizontalDivider;
-                //需要换行了。
+                //是否需要换行的判断
                 if (useWidth > widthSize && row > 0) {
                     row = 0;
                     line++;
@@ -372,7 +369,6 @@ public final class SmallTagView extends View {
                 tagDrawable.row = row;
                 row++;
             }
-            //计算View的高度
             int tagHeight = getTextHeight();
             int resultLine = Math.min(line + 1, mMaxLines);
             int resultHeight = tagHeight * resultLine + mVerticalDivider * (resultLine - 1) + getPaddingTop() + getPaddingBottom();
@@ -399,6 +395,9 @@ public final class SmallTagView extends View {
 
     }
 
+    /**
+     * 单个Tag Drawable封装
+     */
     private static class TagDrawable extends Drawable {
 
         private final String text;
