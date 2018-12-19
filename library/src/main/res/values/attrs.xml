@@ -7,26 +7,19 @@
         <attr name="textPaddingRight" format="dimension|reference"></attr>
         <attr name="textPaddingTop" format="dimension|reference"></attr>
         <attr name="textPaddingBottom" format="dimension"></attr>
-        
-        
         <attr name="tagBackground" format="color|reference"></attr>
-        <attr name="tagTextColor" format="color|reference"></attr>
-        <attr name="tagTextSize" format="dimension|reference"></attr>
-        <attr name="tagRadius" format="dimension|integer"></attr>
 
+        <attr name="tagRadius" format="dimension|integer"></attr>
         <!--水平的间隔-->
         <attr name="tagHorizontalDivider" format="dimension|reference"></attr>
         <!--竖直方向的间隔-->
         <attr name="tagVerticalDivider" format="dimension|reference"></attr>
 
-
-
-        <attr name="maxLines" format="integer|reference"></attr>
-
         <!--显示的最大Tag数-->
         <attr name="maxTagNum" format="integer|reference"></attr>
-
- 
+        <attr name="android:textSize"></attr>
+        <attr name="android:textColor"></attr>
+        <attr name="android:maxLines"></attr>
 
     </declare-styleable>
 </resources>

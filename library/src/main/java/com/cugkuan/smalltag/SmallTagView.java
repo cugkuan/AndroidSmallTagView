@@ -105,11 +105,11 @@ public final class SmallTagView extends View {
             if (array.hasValue(R.styleable.SmallTagView_tagRadius)) {
                 mTagRadius = array.getDimensionPixelOffset(R.styleable.SmallTagView_tagRadius, 0);
             }
-            if (array.hasValue(R.styleable.SmallTagView_tagTextSize)) {
-                mTagTextSize = array.getDimensionPixelSize(R.styleable.SmallTagView_tagTextSize, 0);
+            if (array.hasValue(R.styleable.SmallTagView_android_textSize)) {
+                mTagTextSize = array.getDimensionPixelSize(R.styleable.SmallTagView_android_textSize, 0);
             }
-            if (array.hasValue(R.styleable.SmallTagView_tagTextColor)) {
-                mTagTextColor = array.getColor(R.styleable.SmallTagView_tagTextColor, Color.parseColor("#000000"));
+            if (array.hasValue(R.styleable.SmallTagView_android_textColor)) {
+                mTagTextColor = array.getColor(R.styleable.SmallTagView_android_textColor, Color.parseColor("#000000"));
             }
             if (array.hasValue(R.styleable.SmallTagView_textPaddingBottom)) {
                 mTextPaddingBottom = array.getDimensionPixelSize(R.styleable.SmallTagView_textPaddingBottom, 0);
@@ -123,8 +123,8 @@ public final class SmallTagView extends View {
             if (array.hasValue(R.styleable.SmallTagView_textPaddingTop)) {
                 mTextPaddingTop = array.getDimensionPixelSize(R.styleable.SmallTagView_textPaddingTop, 0);
             }
-            if (array.hasValue(R.styleable.SmallTagView_maxLines)) {
-                mMaxLines = array.getInt(R.styleable.SmallTagView_maxLines, Integer.MAX_VALUE);
+            if (array.hasValue(R.styleable.SmallTagView_android_maxLines)) {
+                mMaxLines = array.getInt(R.styleable.SmallTagView_android_maxLines, Integer.MAX_VALUE);
             }
             if (array.hasValue(R.styleable.SmallTagView_maxTagNum)) {
                 mMaxTagNum = array.getInt(R.styleable.SmallTagView_maxTagNum, Integer.MAX_VALUE);
