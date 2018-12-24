@@ -91,6 +91,7 @@ public final class SmallTagView extends View {
 
     public SmallTagView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setLayerType(View.LAYER_TYPE_SOFTWARE,null);
         if (attrs != null) {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SmallTagView);
             if (array.hasValue(R.styleable.SmallTagView_tagBackground)) {
